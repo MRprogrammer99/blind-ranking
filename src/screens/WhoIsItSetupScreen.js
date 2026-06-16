@@ -4,22 +4,91 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function WhoIsItSetupScreen({ navigation }) {
+  const [step, setStep] = useState(1); // 1 = P1 input, 2 = Pass phone, 3 = P2 input
+
   const [player1Name, setPlayer1Name] = useState('Player 1');
   const [player1Character, setPlayer1Character] = useState('');
   
   const [player2Name, setPlayer2Name] = useState('Player 2');
   const [player2Character, setPlayer2Character] = useState('');
 
-  const handleStartGame = () => {
-    if (!player1Character.trim() || !player2Character.trim()) {
-      Alert.alert('Missing Characters', 'Both players need to enter a secret character to play!');
-      return;
+  const handleNextStep = () => {
+    if (step === 1) {
+      if (!player1Character.trim()) {
+        Alert.alert('Missing Character', 'Please enter your secret character!');
+        return;
+      }
+      setStep(2);
+    } else if (step === 2) {
+      setStep(3);
+    } else if (step === 3) {
+      if (!player2Character.trim()) {
+        Alert.alert('Missing Character', 'Please enter your secret character!');
+        return;
+      }
+      // Start Game
+      navigation.replace('WhoIsItGame', {
+        player1: { name: player1Name, character: player1Character.trim() },
+        player2: { name: player2Name, character: player2Character.trim() },
+      });
     }
+  };
 
-    navigation.replace('WhoIsItGame', {
-      player1: { name: player1Name, character: player1Character.trim() },
-      player2: { name: player2Name, character: player2Character.trim() },
-    });
+  const renderContent = () => {
+    if (step === 1) {
+      return (
+        <View style={styles.playerSection}>
+          <Text style={styles.sectionTitle}>Player 1's Turn</Text>
+          <Text style={styles.instructions}>Make sure Player 2 is not looking!</Text>
+          <TextInput
+            style={styles.nameInput}
+            placeholder="Your Name (e.g. Alice)"
+            placeholderTextColor="#666"
+            value={player1Name}
+            onChangeText={setPlayer1Name}
+          />
+          <TextInput
+            style={styles.secretInput}
+            placeholder="Secret Character (e.g. Mr. Bean)"
+            placeholderTextColor="#666"
+            value={player1Character}
+            onChangeText={setPlayer1Character}
+            secureTextEntry
+          />
+        </View>
+      );
+    } else if (step === 2) {
+      return (
+        <View style={styles.passSection}>
+          <MaterialCommunityIcons name="cellphone-arrow-down" size={80} color="#00b09b" />
+          <Text style={styles.passTitle}>Pass the Device</Text>
+          <Text style={styles.passDesc}>Give the device to Player 2.</Text>
+          <Text style={styles.passDesc}>Player 1, close your eyes or look away!</Text>
+        </View>
+      );
+    } else if (step === 3) {
+      return (
+        <View style={styles.playerSection}>
+          <Text style={styles.sectionTitle}>Player 2's Turn</Text>
+          <Text style={styles.instructions}>Make sure Player 1 is not looking!</Text>
+          <TextInput
+            style={styles.nameInput}
+            placeholder="Your Name (e.g. Bob)"
+            placeholderTextColor="#666"
+            value={player2Name}
+            onChangeText={setPlayer2Name}
+          />
+          <TextInput
+            style={styles.secretInput}
+            placeholder="Secret Character (e.g. Michael Jackson)"
+            placeholderTextColor="#666"
+            value={player2Character}
+            onChangeText={setPlayer2Character}
+            secureTextEntry
+          />
+        </View>
+      );
+    }
   };
 
   return (
@@ -41,65 +110,35 @@ export default function WhoIsItSetupScreen({ navigation }) {
         <Text style={styles.title}>Who Is It?</Text>
         <Text style={styles.subtitle}>Enter your secret characters</Text>
 
-        <View style={styles.playerSection}>
-          <Text style={styles.sectionTitle}>Player 1</Text>
-          <TextInput
-            style={styles.nameInput}
-            placeholder="Your Name (e.g. Alice)"
-            placeholderTextColor="#666"
-            value={player1Name}
-            onChangeText={setPlayer1Name}
-          />
-          <TextInput
-            style={styles.secretInput}
-            placeholder="Secret Character (e.g. Mr. Bean)"
-            placeholderTextColor="#666"
-            value={player1Character}
-            onChangeText={setPlayer1Character}
-            secureTextEntry // Hides the text so the other player can't see
-          />
-        </View>
+        {renderContent()}
 
-        <View style={styles.divider} />
-
-        <View style={styles.playerSection}>
-          <Text style={styles.sectionTitle}>Player 2</Text>
-          <TextInput
-            style={styles.nameInput}
-            placeholder="Your Name (e.g. Bob)"
-            placeholderTextColor="#666"
-            value={player2Name}
-            onChangeText={setPlayer2Name}
-          />
-          <TextInput
-            style={styles.secretInput}
-            placeholder="Secret Character (e.g. Michael Jackson)"
-            placeholderTextColor="#666"
-            value={player2Character}
-            onChangeText={setPlayer2Character}
-            secureTextEntry // Hides the text
-          />
-        </View>
-
-        <TouchableOpacity style={styles.startBtn} onPress={handleStartGame} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.startBtn} onPress={handleNextStep} activeOpacity={0.8}>
           <LinearGradient
             colors={['#00b09b', '#96c93d']}
             style={styles.startBtnGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
           >
-            <MaterialCommunityIcons name="play-circle" size={24} color="#fff" />
-            <Text style={styles.startBtnText}>Start Guessing!</Text>
+            <MaterialCommunityIcons 
+              name={step === 3 ? "play-circle" : "arrow-right-circle"} 
+              size={24} 
+              color="#fff" 
+            />
+            <Text style={styles.startBtnText}>
+              {step === 1 ? 'Next' : step === 2 ? 'I am Player 2' : 'Start Guessing!'}
+            </Text>
           </LinearGradient>
         </TouchableOpacity>
 
-        <View style={styles.rulesBox}>
-          <Text style={styles.rulesTitle}>How to Play</Text>
-          <Text style={styles.ruleItem}>1️⃣  Both players enter a secret character.</Text>
-          <Text style={styles.ruleItem}>2️⃣  Take turns guessing each other's character.</Text>
-          <Text style={styles.ruleItem}>3️⃣  You can only ask 8 Yes/No questions.</Text>
-          <Text style={styles.ruleItem}>4️⃣  Use the suggested questions to narrow it down!</Text>
-        </View>
+        {step === 1 && (
+          <View style={styles.rulesBox}>
+            <Text style={styles.rulesTitle}>How to Play</Text>
+            <Text style={styles.ruleItem}>1️⃣  Both players enter a secret character secretly.</Text>
+            <Text style={styles.ruleItem}>2️⃣  Take turns guessing each other's character.</Text>
+            <Text style={styles.ruleItem}>3️⃣  You can only ask 8 Yes/No questions.</Text>
+            <Text style={styles.ruleItem}>4️⃣  Use the suggested questions to narrow it down!</Text>
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -151,16 +190,47 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 400,
     backgroundColor: '#1A1A1A',
-    padding: 20,
+    padding: 25,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#2A2A2A',
   },
+  passSection: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: '#1A1A1A',
+    padding: 40,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#00b09b',
+    alignItems: 'center',
+  },
+  passTitle: {
+    color: '#00b09b',
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginTop: 15,
+    marginBottom: 10,
+  },
+  passDesc: {
+    color: '#ddd',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 5,
+  },
   sectionTitle: {
     color: '#00b09b',
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  instructions: {
+    color: '#FF6B6B',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+    fontStyle: 'italic',
   },
   nameInput: {
     backgroundColor: '#252525',
@@ -176,15 +246,8 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     fontSize: 16,
-    borderColor: '#FF6B6B',
+    borderColor: '#00b09b',
     borderWidth: 1,
-  },
-  divider: {
-    height: 1,
-    width: '100%',
-    maxWidth: 300,
-    backgroundColor: '#333',
-    marginVertical: 20,
   },
   startBtn: {
     width: '100%',
