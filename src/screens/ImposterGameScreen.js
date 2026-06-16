@@ -7,7 +7,7 @@ const { width } = Dimensions.get('window');
 const REVEAL_DURATION = 3000; // 3 seconds
 
 export default function ImposterGameScreen({ route, navigation }) {
-  const { playerCount, selectedWord, imposters } = route.params;
+  const { playerCount, selectedWord, selectedHint, imposters } = route.params;
 
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [phase, setPhase] = useState('waiting'); // 'waiting' | 'revealed' | 'done'
@@ -155,6 +155,7 @@ export default function ImposterGameScreen({ route, navigation }) {
                 <MaterialCommunityIcons name="eye-check" size={80} color="#fff" />
                 <Text style={styles.revealMainText}>The word is</Text>
                 <Text style={styles.revealBigText}>{selectedWord}</Text>
+                <Text style={styles.revealHintText}>{selectedHint}</Text>
                 <Text style={styles.revealHint}>Remember this word!</Text>
               </>
             )}
@@ -344,6 +345,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 8,
     textAlign: 'center',
+  },
+  revealHintText: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 16,
+    marginTop: 10,
+    textAlign: 'center',
+    fontStyle: 'italic',
+    backgroundColor: 'rgba(0,0,0,0.15)',
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 10,
   },
   revealHint: {
     color: 'rgba(255,255,255,0.6)',

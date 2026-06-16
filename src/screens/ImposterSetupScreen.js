@@ -8,9 +8,9 @@ export default function ImposterSetupScreen({ navigation }) {
   const [playerCount, setPlayerCount] = useState(4);
 
   const startGame = () => {
-    // Pick a random word
+    // Pick a random word object { word, hint }
     const randomIndex = Math.floor(Math.random() * wordBank.length);
-    const selectedWord = wordBank[randomIndex];
+    const selected = wordBank[randomIndex];
 
     // Pick random imposter(s): 1 imposter for 3-5, optionally 2 for 6-8
     const imposterCount = playerCount >= 6 ? (Math.random() > 0.5 ? 2 : 1) : 1;
@@ -25,7 +25,8 @@ export default function ImposterSetupScreen({ navigation }) {
 
     navigation.replace('ImposterGame', {
       playerCount,
-      selectedWord,
+      selectedWord: selected.word,
+      selectedHint: selected.hint,
       imposters: Array.from(imposters),
     });
   };
