@@ -26,6 +26,16 @@ const games = [
     route: 'ImposterSetup',
     available: true,
   },
+  {
+    id: 'who-is-it',
+    title: 'Who Is It?',
+    description: 'Ask yes/no questions to guess the secret character',
+    icon: 'help-circle-outline',
+    gradient: ['#00b09b', '#96c93d'],
+    players: '2',
+    route: 'WhoIsItSetup',
+    available: true,
+  },
 ];
 
 export default function GameHubScreen({ navigation }) {

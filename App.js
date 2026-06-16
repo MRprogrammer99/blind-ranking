@@ -11,6 +11,9 @@ import ModeSelectScreen from './src/screens/ModeSelectScreen';
 import GuestDisplayScreen from './src/screens/GuestDisplayScreen';
 import ImposterSetupScreen from './src/screens/ImposterSetupScreen';
 import ImposterGameScreen from './src/screens/ImposterGameScreen';
+import WhoIsItSetupScreen from './src/screens/WhoIsItSetupScreen';
+import WhoIsItGameScreen from './src/screens/WhoIsItGameScreen';
+import WhoIsItResultScreen from './src/screens/WhoIsItResultScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +31,9 @@ export default function App() {
           <Stack.Screen name="GamePlay" component={GamePlayScreen} />
           <Stack.Screen name="ImposterSetup" component={ImposterSetupScreen} />
           <Stack.Screen name="ImposterGame" component={ImposterGameScreen} />
+          <Stack.Screen name="WhoIsItSetup" component={WhoIsItSetupScreen} />
+          <Stack.Screen name="WhoIsItGame" component={WhoIsItGameScreen} />
+          <Stack.Screen name="WhoIsItResult" component={WhoIsItResultScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
