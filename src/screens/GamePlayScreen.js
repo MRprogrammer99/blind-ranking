@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { loadGames } from '../utils/storage';
-import { ref, set } from 'firebase/database';
+import { ref, set, update } from 'firebase/database';
 import { database } from '../utils/firebase';
 
 export default function GamePlayScreen({ navigation, route }) {
@@ -52,7 +52,7 @@ export default function GamePlayScreen({ navigation, route }) {
   useEffect(() => {
     if (game) {
       const liveGameRef = ref(database, 'live_game');
-      set(liveGameRef, {
+      update(liveGameRef, {
         gameId: game.id,
         title: game.title,
         totalItems: game.items.length,

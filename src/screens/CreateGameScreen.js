@@ -60,25 +60,34 @@ export default function CreateGameScreen({ navigation, route }) {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [9, 16],
-        quality: 0.2, // Compress the image to save database space
-        base64: true, // Get raw image data
+        quality: 0.5,
       });
 
       if (!result.canceled) {
         setIsUploading(true);
-        // We will store the raw image directly instead of using Cloud Storage!
-        const base64Data = `data:image/jpeg;base64,${result.assets[0].base64}`;
         
-        // Update item directly with the base64 string
+        const uri = result.assets[0].uri;
+        const filename = uri.substring(uri.lastIndexOf('/') + 1) || `image_${Date.now()}.jpg`;
+        
+        // Upload to Firebase Storage
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        
+        const imageRef = ref(storage, `game_items/${Date.now()}_${filename}`);
+        await uploadBytes(imageRef, blob);
+        
+        const downloadUrl = await getDownloadURL(imageRef);
+        
+        // Update item with the tiny URL instead of massive base64
         setItems(currentItems => currentItems.map(item => 
-          item.id === itemId ? { ...item, imageUri: base64Data } : item
+          item.id === itemId ? { ...item, imageUri: downloadUrl } : item
         ));
         
         setIsUploading(false);
       }
     } catch (e) {
       console.error(e);
-      Alert.alert('Upload Failed', 'There was an error attaching the image.');
+      Alert.alert('Upload Failed', 'There was an error attaching the image. Make sure Firebase Storage is enabled in your Firebase console.');
       setIsUploading(false);
     }
   };
