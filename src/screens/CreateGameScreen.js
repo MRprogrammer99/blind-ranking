@@ -66,19 +66,31 @@ export default function CreateGameScreen({ navigation, route }) {
       if (!result.canceled) {
         setIsUploading(true);
         
-        const uri = result.assets[0].uri;
-        const filename = uri.substring(uri.lastIndexOf('/') + 1) || `image_${Date.now()}.jpg`;
+        const asset = result.assets[0];
+        const uri = asset.uri;
+        const filename = `image_${Date.now()}.jpg`;
         
         // Upload to Firebase Storage
-        const response = await fetch(uri);
-        const blob = await response.blob();
+        let blob;
+        if (Platform.OS === 'web') {
+          // On web, fetch the blob URI directly
+          const response = await fetch(uri);
+          blob = await response.blob();
+        } else {
+          // On native, fetch the file URI
+          const response = await fetch(uri);
+          blob = await response.blob();
+        }
+        
+        // Determine content type
+        const contentType = asset.mimeType || blob.type || 'image/jpeg';
         
         const imageRef = ref(storage, `game_items/${Date.now()}_${filename}`);
-        await uploadBytes(imageRef, blob);
+        await uploadBytes(imageRef, blob, { contentType });
         
         const downloadUrl = await getDownloadURL(imageRef);
         
-        // Update item with the tiny URL instead of massive base64
+        // Update item with the Firebase URL
         setItems(currentItems => currentItems.map(item => 
           item.id === itemId ? { ...item, imageUri: downloadUrl } : item
         ));
@@ -86,8 +98,8 @@ export default function CreateGameScreen({ navigation, route }) {
         setIsUploading(false);
       }
     } catch (e) {
-      console.error(e);
-      Alert.alert('Upload Failed', 'There was an error attaching the image. Make sure Firebase Storage is enabled in your Firebase console.');
+      console.error('Image upload error:', e);
+      Alert.alert('Upload Failed', 'There was an error attaching the image. Make sure Firebase Storage is enabled in your Firebase console. Error: ' + e.message);
       setIsUploading(false);
     }
   };
