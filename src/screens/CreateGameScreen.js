@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Alert, KeyboardAvoidingView, Platform, Image, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../utils/firebase';
 import { loadGames, saveGames } from '../utils/storage';
 
 export default function CreateGameScreen({ navigation, route }) {
@@ -60,35 +58,40 @@ export default function CreateGameScreen({ navigation, route }) {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [9, 16],
-        quality: 0.5,
+        quality: 0.2,
+        base64: true,
       });
 
       if (!result.canceled) {
         setIsUploading(true);
-        
         const asset = result.assets[0];
-        const uri = asset.uri;
-        const filename = `image_${Date.now()}.jpg`;
         
-        const response = await fetch(uri);
-        const blob = await response.blob();
+        let dataUrl = null;
         
-        const contentType = asset.mimeType || blob.type || 'image/jpeg';
-        const imageRef = ref(storage, `game_items/${Date.now()}_${filename}`);
-        await uploadBytes(imageRef, blob, { contentType });
+        if (asset.base64) {
+           const mimeType = asset.mimeType || 'image/jpeg';
+           dataUrl = `data:${mimeType};base64,${asset.base64}`;
+        } else {
+           const response = await fetch(asset.uri);
+           const blob = await response.blob();
+           dataUrl = await new Promise((resolve, reject) => {
+             const reader = new FileReader();
+             reader.onloadend = () => resolve(reader.result);
+             reader.onerror = reject;
+             reader.readAsDataURL(blob);
+           });
+        }
         
-        const downloadUrl = await getDownloadURL(imageRef);
-        
-        // Update item with the Firebase URL
+        // Save image directly as Base64 data URL to Realtime Database
         setItems(currentItems => currentItems.map(item => 
-          item.id === itemId ? { ...item, imageUri: downloadUrl } : item
+          item.id === itemId ? { ...item, imageUri: dataUrl } : item
         ));
         
         setIsUploading(false);
       }
     } catch (e) {
       console.error('Image upload error:', e);
-      Alert.alert('Upload Failed', 'There was an error attaching the image. Make sure Firebase Storage CORS is configured properly. Error: ' + e.message);
+      Alert.alert('Upload Failed', 'There was an error attaching the image.');
       setIsUploading(false);
     }
   };
