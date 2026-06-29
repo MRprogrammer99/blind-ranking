@@ -70,21 +70,10 @@ export default function CreateGameScreen({ navigation, route }) {
         const uri = asset.uri;
         const filename = `image_${Date.now()}.jpg`;
         
-        // Upload to Firebase Storage
-        let blob;
-        if (Platform.OS === 'web') {
-          // On web, fetch the blob URI directly
-          const response = await fetch(uri);
-          blob = await response.blob();
-        } else {
-          // On native, fetch the file URI
-          const response = await fetch(uri);
-          blob = await response.blob();
-        }
+        const response = await fetch(uri);
+        const blob = await response.blob();
         
-        // Determine content type
         const contentType = asset.mimeType || blob.type || 'image/jpeg';
-        
         const imageRef = ref(storage, `game_items/${Date.now()}_${filename}`);
         await uploadBytes(imageRef, blob, { contentType });
         
@@ -99,7 +88,7 @@ export default function CreateGameScreen({ navigation, route }) {
       }
     } catch (e) {
       console.error('Image upload error:', e);
-      Alert.alert('Upload Failed', 'There was an error attaching the image. Make sure Firebase Storage is enabled in your Firebase console. Error: ' + e.message);
+      Alert.alert('Upload Failed', 'There was an error attaching the image. Make sure Firebase Storage CORS is configured properly. Error: ' + e.message);
       setIsUploading(false);
     }
   };
