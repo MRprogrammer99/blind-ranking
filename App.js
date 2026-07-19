@@ -14,6 +14,7 @@ import ImposterGameScreen from './src/screens/ImposterGameScreen';
 import WhoIsItSetupScreen from './src/screens/WhoIsItSetupScreen';
 import WhoIsItGameScreen from './src/screens/WhoIsItGameScreen';
 import WhoIsItResultScreen from './src/screens/WhoIsItResultScreen';
+import GuessMovieScreen from './src/screens/GuessMovieScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,7 @@ export default function App() {
           <Stack.Screen name="WhoIsItSetup" component={WhoIsItSetupScreen} />
           <Stack.Screen name="WhoIsItGame" component={WhoIsItGameScreen} />
           <Stack.Screen name="WhoIsItResult" component={WhoIsItResultScreen} />
+          <Stack.Screen name="GuessMovie" component={GuessMovieScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </>

@@ -36,6 +36,16 @@ const games = [
     route: 'WhoIsItSetup',
     available: true,
   },
+  {
+    id: 'guess-movie',
+    title: 'Guess the Movie',
+    description: 'Act or describe Tamil movies',
+    icon: 'movie-open-play',
+    gradient: ['#FFD700', '#FFA500'],
+    players: '2+',
+    route: 'GuessMovie',
+    available: true,
+  },
 ];
 
 export default function GameHubScreen({ navigation }) {
