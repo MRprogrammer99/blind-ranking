@@ -92,7 +92,7 @@ export default function ImposterGameScreen({ route, navigation }) {
           <MaterialCommunityIcons name="account-group" size={20} color="#6C63FF" />
           <Text style={styles.doneInfoText}>{playerCount} players</Text>
           <Text style={styles.doneDivider}>•</Text>
-          <MaterialCommunityIcons name="incognito" size={20} color="#FF6B6B" />
+          <MaterialCommunityIcons name="incognito" size={20} color="#fff" />
           <Text style={styles.doneInfoText}>{imposters.length} imposter{imposters.length > 1 ? 's' : ''}</Text>
         </View>
 
@@ -138,7 +138,7 @@ export default function ImposterGameScreen({ route, navigation }) {
           ]}
         >
           <LinearGradient
-            colors={isImposter ? ['#FF6B6B', '#C0392B'] : ['#6C63FF', '#4834DF']}
+            colors={['#2A2A2A', '#1A1A1A']}
             style={styles.revealGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     letterSpacing: 3,
   },
   playerNumber: {
-    color: '#FF6B6B',
+    color: '#fff',
     fontSize: 80,
     fontWeight: 'bold',
     lineHeight: 90,
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
   },
   dotCurrent: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#fff',
     width: 24,
     borderRadius: 6,
   },

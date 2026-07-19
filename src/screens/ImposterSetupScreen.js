@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   countNumber: {
-    color: '#FF6B6B',
+    color: '#fff',
     fontSize: 56,
     fontWeight: 'bold',
   },
